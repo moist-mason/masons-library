@@ -13,32 +13,26 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * <p>Utility class that more concise methods for recipe datagen. The vanilla RecipeProvider class already has several helper methods for commonly used recipes,
- * but they often still require you to add manual input, like criteria for unlocking the recipe in the recipe book. This class adds does all that for you. </p>
+ * but they often still require additional manual input, like criteria for unlocking the recipe in the recipe book. This class does all that for you. </p>
  * <p>Usage: extend your mod's recipe provider class from this class. Then, when calling the super in your mod class's constructor,
  * pass in your mod's item registry field in the {@code itemRegistry} parameter. </p>
  */
 public abstract class LibraryRecipeProvider extends RecipeProvider {
 
-    /**
-     * The mod's item registry.
-     */
-    private final DeferredRegister.Items itemsRegistry;
+    /** The mod's item registry. */
+    private final DeferredRegister.Items itemRegistry;
 
-    public LibraryRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DeferredRegister.Items itemsRegistry) {
+    public LibraryRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DeferredRegister.Items itemRegistry) {
         super(output, registries);
-        this.itemsRegistry = itemsRegistry;
+        this.itemRegistry = itemRegistry;
     }
 
-    /**
-     * Creates a two-by-two recipe consisting of a single ingredient.
-     */
+    /** Creates a two-by-two recipe consisting of a single ingredient. */
     protected void twoSquaredRecipe(RecipeOutput output, RecipeCategory category, ItemLike material, ItemLike result) {
         twoSquaredRecipe(output, category, material, result, 1);
     }
 
-    /**
-     * Creates a two-by-two recipe consisting of a single ingredient.
-     */
+    /** Creates a two-by-two recipe consisting of a single ingredient. */
     protected void twoSquaredRecipe(RecipeOutput output, RecipeCategory category, ItemLike material, ItemLike result, int count) {
         ShapedRecipeBuilder.shaped(category, result, count)
                 .pattern("##")
@@ -47,9 +41,7 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
                 .unlockedBy(hasName(material), has(material.asItem())).save(output);
     }
 
-    /**
-     * Creates a three-by-three recipe consisting of a single ingredient.
-     */
+    /** Creates a three-by-three recipe consisting of a single ingredient. */
     protected void threeSquaredRecipe(RecipeOutput output, RecipeCategory category, ItemLike material, ItemLike result) {
         ShapedRecipeBuilder.shaped(category, result)
                 .pattern("###")
@@ -59,9 +51,7 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
                 .unlockedBy(hasName(material), has(material.asItem())).save(output);
     }
 
-    /**
-     * Creates a simple slab recipe.
-     */
+    /** Creates a simple slab recipe. */
     protected void slabRecipe(RecipeOutput output, ItemLike material, ItemLike result) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, result, 6)
                 .pattern("###")
@@ -69,9 +59,7 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
                 .unlockedBy(hasName(material), has(material.asItem())).save(output);
     }
 
-    /**
-     * Creates a simple stair recipe.
-     */
+    /** Creates a simple stair recipe. */
     protected void stairRecipe(RecipeOutput output, ItemLike material, ItemLike result) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, result, 4)
                 .pattern("#  ")
@@ -81,9 +69,7 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(material), has(material)).save(output);
     }
 
-    /**
-     * Creates a simple wall recipe.
-     */
+    /** Creates a simple wall recipe. */
     protected void wallRecipe(RecipeOutput output, ItemLike material, ItemLike result) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, result, 6)
                 .pattern("###")
@@ -108,21 +94,18 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
         smeltingRecipe(output, category, material, result, 0.1F, 200);
     }
 
-    /**
-     * Creates a simple smelting recipe with a definable XP reward and smelting time.
-     */
+    /** Creates a simple smelting recipe with a definable XP reward and smelting time. */
     protected void smeltingRecipe(RecipeOutput output, RecipeCategory category, ItemLike material, ItemLike result, float xp, int time) {
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(material), category, result, xp, time).save(output);
     }
 
-
     /**
-     * @return "has_" + the ID of the provided item. This checks through the vanilla and mod item registries to find the correct ID. This is a similar method to
+     * @return "has_" + the ID of the provided item. This checks through either the vanilla or mod item registries to find the correct ID. This is a similar method to
      * {@code RecipeProvider.getHasName}.
      */
     protected String hasName(ItemLike item) {
         return BuiltInRegistries.ITEM.containsValue(item.asItem())
                 ? "has_" + BuiltInRegistries.ITEM.getKey(item.asItem()).getPath()
-                : "has_" + RegistryUtil.getId(itemsRegistry, item.asItem());
+                : "has_" + RegistryUtil.getId(itemRegistry, item.asItem());
     }
 }

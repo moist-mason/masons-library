@@ -11,15 +11,15 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 
 /**
  * <p>An implementation of NeoForge's existing {@link BlockStateProvider} class, with more concise/readable methods.</p>
- * <p>Usage: extend your mod's block state provider datagen class from this one; make sure to define the {@link ResourceProvider} first.</p>
+ * <p>Usage: extend your mod's block state provider datagen class from this one.</p>
  * @author moist-mason
  */
 public abstract class LibraryBlockStateProvider extends BlockStateProvider {
     private final ResourceProvider resourceProvider;
 
-    public LibraryBlockStateProvider(PackOutput output, String modId, ExistingFileHelper fileHelper, ResourceProvider resourceProvider) {
+    public LibraryBlockStateProvider(PackOutput output, String modId, ExistingFileHelper fileHelper) {
         super(output, modId, fileHelper);
-        this.resourceProvider = resourceProvider;
+        this.resourceProvider = new ResourceProvider(modId);
     }
 
     protected <T extends Block> void block(DeferredBlock<T> block) {

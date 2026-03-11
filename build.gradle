@@ -26,7 +26,16 @@ base {
 }
 
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java {
+    withSourcesJar()
+    withJavadocJar()
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    destinationDir = project.file('build/docs/')
+}
 
 neoForge {
     // Specify the version of NeoForge to use.
@@ -159,16 +168,45 @@ sourceSets.main.resources.srcDir generateModMetadata
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
 neoForge.ideSyncTask generateModMetadata
 
+sourcesJar {
+    from sourceSets.main.allSource
+}
+
+javadocJar {
+    from javadoc.destinationDir
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
             from components.java
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+            pom {
+                name = artifactId
+                description = 'Library mod for mods developed by moist-mason'
+                licenses {
+                    license {
+                        name = 'MIT-License'
+                        url = 'https://raw.githubusercontent.com/moist-mason/masons-library/refs/heads/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'moist-mason'
+                        name = 'Mason'
+                        url = 'https//github.com/moist-mason/'
+                    }
+                }
+            }
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            name = 'masons-mod-maven'
+            url = '../masons-mod-maven/'
         }
     }
 }

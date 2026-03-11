@@ -11,13 +11,13 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class BlockFactories {
 
-    /* Generic block */
+    /** Standard block factory. */
     @FunctionalInterface
     public interface BlockFactory<T extends Block> {
         T create(Properties properties);
     }
 
-    /* Stairs */
+    /** Stair block factory. */
     @FunctionalInterface
     public interface StairBlockFactory<T extends StairBlock> {
         T create(BlockState parentState, Properties properties);

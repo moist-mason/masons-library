@@ -5,7 +5,10 @@ import net.minecraft.resources.ResourceLocation;
 import static net.minecraft.resources.ResourceLocation.DEFAULT_NAMESPACE;
 
 /**
- * Helper methods for obtaining resource locations, both from vanilla and from your mod.
+ * <p> Helper methods for obtaining resource locations, both from vanilla and from your mod. </p>
+ * <p> Usage: Simply call in an instance of this class, passing in your mod ID as the argument. This will let you easily
+ * call any resource location in your mod. An example implementation can be found in the
+ * {@link com.github.moistmason.library.data.LibraryBlockStateProvider} class.</p>
  * @author moist-mason
  */
 public class ResourceProvider {
@@ -15,18 +18,22 @@ public class ResourceProvider {
         this.modId = modId;
     }
 
+    /** @return the resource location for the vanilla block ID.*/
     public ResourceLocation vanillaBlock(String id) {
         return vanillaResource("block/" + id);
     }
 
+    /** @return the resource location for the mod block ID.*/
     public ResourceLocation modBlock(String id) {
         return modResource("block/" + id);
     }
 
+    /** @return the resource location for the vanilla ID.*/
     public ResourceLocation vanillaResource(String id) {
         return ResourceLocation.fromNamespaceAndPath(DEFAULT_NAMESPACE, id);
     }
 
+    /** @return the resource location for the mod ID.*/
     public ResourceLocation modResource(String id) {
         return ResourceLocation.fromNamespaceAndPath(modId, id);
     }
