@@ -76,7 +76,7 @@ public abstract class LibraryEnglishLanguageProvider extends LanguageProvider {
     }
 
     protected <T extends CreativeModeTab> void addCreativeTab(DeferredHolder<CreativeModeTab, T> creativeTab, String name) {
-        String key = String.join(".", "itemGroup", creativeTab.getId().getNamespace(), "itemGroup", creativeTab.getId().getPath());
+        String key = String.join(".", "itemGroup", creativeTab.getId().getNamespace(), creativeTab.getId().getPath());
         add(key, name);
     }
 
