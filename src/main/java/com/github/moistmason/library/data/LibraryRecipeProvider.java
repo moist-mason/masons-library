@@ -66,7 +66,7 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
                 .pattern("## ")
                 .pattern("###")
                 .define('#', material)
-                .unlockedBy(getHasName(material), has(material)).save(output);
+                .unlockedBy(hasName(material), has(material)).save(output);
     }
 
     /** Creates a simple wall recipe. */
@@ -75,7 +75,7 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
                 .pattern("###")
                 .pattern("###")
                 .define('#', material)
-                .unlockedBy(getHasName(material), has(material)).save(output);
+                .unlockedBy(hasName(material), has(material)).save(output);
     }
 
     /**
@@ -96,7 +96,8 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
 
     /** Creates a simple smelting recipe with a definable XP reward and smelting time. */
     protected void smeltingRecipe(RecipeOutput output, RecipeCategory category, ItemLike material, ItemLike result, float xp, int time) {
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(material), category, result, xp, time).save(output);
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(material), category, result, xp, time)
+                .unlockedBy(hasName(material), has(material)).save(output);
     }
 
     /**

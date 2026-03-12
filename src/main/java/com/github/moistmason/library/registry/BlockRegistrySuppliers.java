@@ -6,9 +6,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
-import static com.github.moistmason.library.registry.factory.BlockFactories.*;
-
 import java.util.function.Supplier;
+
+import static com.github.moistmason.library.registry.factory.BlockFactories.*;
 
 /**
  * Supplier helper methods for block registration.

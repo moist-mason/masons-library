@@ -5,6 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -13,7 +14,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 /**
@@ -70,6 +73,11 @@ public abstract class LibraryEnglishLanguageProvider extends LanguageProvider {
     /** @see net.neoforged.neoforge.common.data.LanguageProvider */
     protected <E extends Entity, T extends EntityType<E>> void addEntity(DeferredHolder<EntityType<E>, T> entity, String name) {
         add(entity.get(), name);
+    }
+
+    protected <T extends CreativeModeTab> void addCreativeTab(DeferredHolder<CreativeModeTab, T> creativeTab, String name) {
+        String key = String.join(".", "itemGroup", creativeTab.getId().getNamespace(), "itemGroup", creativeTab.getId().getPath());
+        add(key, name);
     }
 
     /** Converts an ID to its English translation. */
