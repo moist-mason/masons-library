@@ -1,6 +1,7 @@
 package com.github.moistmason.library.resource;
 
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import static net.minecraft.resources.ResourceLocation.DEFAULT_NAMESPACE;
 
@@ -26,6 +27,11 @@ public class ResourceProvider {
     /** @return the resource location for the mod block ID.*/
     public ResourceLocation modBlock(String id) {
         return modResource("block/" + id);
+    }
+
+    /** @return the resource location for the mod block ID, based on the provided block object.*/
+    public ResourceLocation modBlock(DeferredBlock<?> block) {
+        return modBlock(block.getId().getPath());
     }
 
     /** @return the resource location for the vanilla ID.*/

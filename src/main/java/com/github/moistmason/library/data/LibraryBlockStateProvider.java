@@ -5,6 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -80,11 +81,12 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
 
     protected <T extends DoorBlock> void doorBlock(DeferredBlock<T> block, ResourceLocation bottom, ResourceLocation top) {
         doorBlock(block.get(), bottom, top);
+        itemModels().basicItem(block.getId());
     }
 
     protected <T extends IronBarsBlock> void paneBlock(DeferredBlock<T> block, ResourceLocation pane, ResourceLocation edge) {
         paneBlock(block.get(), pane, edge);
-        blockItem(block);
+        basicItemFromBlock(modBlock(block));
     }
 
     protected <T extends TrapDoorBlock> void trapdoorBlock(DeferredBlock<T> block, ResourceLocation texture) {
@@ -105,11 +107,28 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
         simpleBlockItem(block.get(), new ModelFile.UncheckedModelFile(modBlock(id)));
     }
 
+    /**
+     * @return an item model whose texture is the given block texture location. Used for items such as glass panes that
+     * use raw block textures while in the inventory. Note that this assumes "block/" is prepended to the resource location path,
+     * so it's best to use {@link LibraryBlockStateProvider#modBlock(DeferredBlock)} or {@link LibraryRecipeProvider#modResource(String)} when passing in a resource location to this method.
+     * The syntax is lifted from a method in {@link net.neoforged.neoforge.client.model.generators.ItemModelProvider}.
+     * @see net.neoforged.neoforge.client.model.generators.ItemModelProvider#basicItem(ResourceLocation)
+     */
+    protected ItemModelBuilder basicItemFromBlock(ResourceLocation block) {
+        return itemModels().getBuilder(block.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", block);
+    }
+
     protected ResourceLocation vanillaBlock(String id) {
         return resourceProvider.vanillaBlock(id);
     }
 
     protected ResourceLocation modBlock(String id) {
         return resourceProvider.modBlock(id);
+    }
+
+    protected ResourceLocation modBlock(DeferredBlock<?> block) {
+        return resourceProvider.modBlock(block);
     }
 }

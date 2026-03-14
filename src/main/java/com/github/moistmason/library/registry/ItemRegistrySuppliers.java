@@ -12,8 +12,6 @@ import java.util.function.Supplier;
 
 import static com.github.moistmason.library.registry.factory.ItemFactories.*;
 
-//TODO: rework this class probably. Item registration seems a little different than I thought :/
-
 /**
  * Supplier helper methods for item registration.
  * @author moist-mason

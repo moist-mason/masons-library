@@ -1,10 +1,12 @@
 package com.github.moistmason.library.data;
 
 import com.github.moistmason.library.registry.RegistryUtil;
+import com.github.moistmason.library.resource.ResourceProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -19,11 +21,15 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class LibraryRecipeProvider extends RecipeProvider {
 
+    private final ResourceProvider resourceProvider;
+
     /** The mod's item registry. */
     private final DeferredRegister.Items itemRegistry;
 
-    public LibraryRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DeferredRegister.Items itemRegistry) {
+
+    public LibraryRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId, DeferredRegister.Items itemRegistry) {
         super(output, registries);
+        this.resourceProvider = new ResourceProvider(modId);
         this.itemRegistry = itemRegistry;
     }
 
@@ -108,5 +114,9 @@ public abstract class LibraryRecipeProvider extends RecipeProvider {
         return BuiltInRegistries.ITEM.containsValue(item.asItem())
                 ? "has_" + BuiltInRegistries.ITEM.getKey(item.asItem()).getPath()
                 : "has_" + RegistryUtil.getId(itemRegistry, item.asItem());
+    }
+
+    protected ResourceLocation modResource(String id) {
+        return resourceProvider.modResource(id);
     }
 }

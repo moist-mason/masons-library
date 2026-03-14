@@ -18,7 +18,7 @@ public class BlockRegistrySuppliers {
 
     /** Creates a simple block with its parent properties copied in full. */
     public static Supplier<Block> supply(Block parent) {
-        return supply(Block::new, parent.properties());
+        return supply(Block::new, parent);
     }
 
     /** Creates a simple block with its own defined properties. */
@@ -36,7 +36,17 @@ public class BlockRegistrySuppliers {
         return supply(Block::new, properties, color);
     }
 
-    /** Creates a block. */
+    /** Creates a block with its properties copied from its parent. */
+    public static <T extends Block> Supplier<T> supply(BlockFactory<T> factory, Block parent) {
+        return () -> factory.create(parent.properties());
+    }
+
+    /** Creaets a block with its properties copi*/
+    public static <T extends Block> Supplier<T> supply(BlockFactory<T> factory, Block parent, MapColor color) {
+        return () -> factory.create(parent.properties().mapColor(color));
+    }
+
+    /** Creates a block with its properties copied from a parent block and its own unique map color */
     public static <T extends Block> Supplier<T> supply(BlockFactory<T> factory, Properties properties) {
         return () -> factory.create(properties);
     }
