@@ -80,12 +80,26 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
     }
 
     protected <T extends DoorBlock> void doorBlock(DeferredBlock<T> block, ResourceLocation bottom, ResourceLocation top) {
-        doorBlock(block.get(), bottom, top);
+        doorBlock(block, bottom, top);
+    }
+
+    protected <T extends DoorBlock> void doorBlockWithCutout(DeferredBlock<T> block, ResourceLocation bottom, ResourceLocation top) {
+        doorBlockWithRenderType(block.get(), bottom, top, "cutout");
         itemModels().basicItem(block.getId());
     }
 
     protected <T extends IronBarsBlock> void paneBlock(DeferredBlock<T> block, ResourceLocation pane, ResourceLocation edge) {
         paneBlock(block.get(), pane, edge);
+        basicItemFromBlock(modBlock(block));
+    }
+
+    protected <T extends IronBarsBlock> void paneBlockWithCutout(DeferredBlock<T> block, ResourceLocation pane, ResourceLocation edge) {
+        paneBlockWithRenderType(block.get(), pane, edge, "cutout");
+        basicItemFromBlock(modBlock(block));
+    }
+
+    protected <T extends IronBarsBlock> void transparentPaneBlock(DeferredBlock<T> block, ResourceLocation pane, ResourceLocation edge) {
+        paneBlockWithRenderType(block.get(), pane, edge, "translucent");
         basicItemFromBlock(modBlock(block));
     }
 
@@ -95,6 +109,15 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
 
     protected <T extends TrapDoorBlock> void trapdoorBlock(DeferredBlock<T> block, ResourceLocation texture, boolean orientable) {
         trapdoorBlock(block.get(), texture, orientable);
+        blockItem(block);
+    }
+
+    protected <T extends TrapDoorBlock> void trapdoorBlockWithCutout(DeferredBlock<T> block, ResourceLocation texture) {
+        trapdoorBlockWithCutout(block, texture, true);
+    }
+
+    protected <T extends TrapDoorBlock> void trapdoorBlockWithCutout(DeferredBlock<T> block, ResourceLocation texture, boolean orientable) {
+        trapdoorBlockWithRenderType(block.get(), texture, orientable, "cutout");
         blockItem(block);
     }
 
