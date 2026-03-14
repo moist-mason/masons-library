@@ -110,12 +110,13 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
     /**
      * @return an item model whose texture is the given block texture location. Used for items such as glass panes that
      * use raw block textures while in the inventory. Note that this assumes "block/" is prepended to the resource location path,
-     * so it's best to use {@link LibraryBlockStateProvider#modBlock(DeferredBlock)} or {@link LibraryRecipeProvider#modResource(String)} when passing in a resource location to this method.
+     * so it's best to use {@link ResourceProvider#modBlock(DeferredBlock)} or {@link ResourceProvider#modBlock(String)} when passing in a resource location to this method.
      * The syntax is lifted from a method in {@link net.neoforged.neoforge.client.model.generators.ItemModelProvider}.
      * @see net.neoforged.neoforge.client.model.generators.ItemModelProvider#basicItem(ResourceLocation)
      */
     protected ItemModelBuilder basicItemFromBlock(ResourceLocation block) {
-        return itemModels().getBuilder("item/" + block.getPath())
+        String id = block.getPath().substring(block.getPath().lastIndexOf('/') + 1);
+        return itemModels().getBuilder("item/" + id)
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", block);
     }
