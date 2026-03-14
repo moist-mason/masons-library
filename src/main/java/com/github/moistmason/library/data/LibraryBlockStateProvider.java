@@ -115,7 +115,7 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
      * @see net.neoforged.neoforge.client.model.generators.ItemModelProvider#basicItem(ResourceLocation)
      */
     protected ItemModelBuilder basicItemFromBlock(ResourceLocation block) {
-        return itemModels().getBuilder(block.toString())
+        return itemModels().getBuilder("item/" + block.getPath())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", block);
     }
