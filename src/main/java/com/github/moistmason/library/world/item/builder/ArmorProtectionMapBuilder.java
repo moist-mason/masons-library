@@ -1,4 +1,4 @@
-package com.github.moistmason.library.world.item;
+package com.github.moistmason.library.world.item.builder;
 
 import net.minecraft.Util;
 import net.minecraft.world.item.ArmorItem.Type;

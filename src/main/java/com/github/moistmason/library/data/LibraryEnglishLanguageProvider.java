@@ -2,16 +2,9 @@ package com.github.moistmason.library.data;
 
 import com.github.moistmason.library.registry.RegistryUtil;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.LinkedList;
@@ -50,29 +43,6 @@ public abstract class LibraryEnglishLanguageProvider extends LanguageProvider {
             String key = String.join(".", category, modId, id);
             add(key, value);
         }
-    }
-
-    /**
-     * Many of these individual add methods are similar to ones from NeoForge's language provider class.
-     * @see net.neoforged.neoforge.common.data.LanguageProvider
-     */
-    protected <T extends Block> void addBlock(DeferredBlock<Block> block, String name) {
-        add(block.get(), name);
-    }
-
-    /** @see net.neoforged.neoforge.common.data.LanguageProvider */
-    protected <T extends Item> void addItem(DeferredItem<T> item, String name) {
-        add(item.get(), name);
-    }
-
-    /** @see net.neoforged.neoforge.common.data.LanguageProvider */
-    protected <T extends MobEffect> void addEffect(DeferredHolder<MobEffect, T> effect, String name) {
-        add(effect.get(), name);
-    }
-
-    /** @see net.neoforged.neoforge.common.data.LanguageProvider */
-    protected <E extends Entity, T extends EntityType<E>> void addEntity(DeferredHolder<EntityType<E>, T> entity, String name) {
-        add(entity.get(), name);
     }
 
     protected <T extends CreativeModeTab> void addCreativeTab(DeferredHolder<CreativeModeTab, T> creativeTab, String name) {

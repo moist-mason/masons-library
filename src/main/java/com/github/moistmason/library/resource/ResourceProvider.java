@@ -19,27 +19,27 @@ public class ResourceProvider {
         this.modId = modId;
     }
 
-    /** @return the resource location for the vanilla block ID.*/
+    /** @return The resource location for the vanilla block ID.*/
     public ResourceLocation vanillaBlock(String id) {
         return vanillaResource("block/" + id);
     }
 
-    /** @return the resource location for the mod block ID.*/
+    /** @return The resource location for the mod block ID.*/
     public ResourceLocation modBlock(String id) {
         return modResource("block/" + id);
     }
 
-    /** @return the resource location for the mod block ID, based on the provided block object.*/
+    /** @return The resource location for the mod block ID, based on the provided block object.*/
     public ResourceLocation modBlock(DeferredBlock<?> block) {
         return modBlock(block.getId().getPath());
     }
 
-    /** @return the resource location for the vanilla ID.*/
+    /** @return The resource location for the vanilla ID.*/
     public ResourceLocation vanillaResource(String id) {
         return ResourceLocation.fromNamespaceAndPath(DEFAULT_NAMESPACE, id);
     }
 
-    /** @return the resource location for the mod ID.*/
+    /** @return The resource location for the mod ID.*/
     public ResourceLocation modResource(String id) {
         return ResourceLocation.fromNamespaceAndPath(modId, id);
     }

@@ -1,4 +1,4 @@
-package com.github.moistmason.library.world.item;
+package com.github.moistmason.library.world.item.builder;
 
 import com.github.moistmason.library.resource.ResourceProvider;
 import net.minecraft.core.Holder;
@@ -26,6 +26,8 @@ public class ArmorMaterialBuilder {
     private final ResourceProvider resourceProvider;
 
     private ResourceLocation location;
+
+    /** Use {@link ArmorProtectionMapBuilder} for easy creation of this map. */
     private EnumMap<Type, Integer> protection;
     private int enchantability;
     private float toughness;

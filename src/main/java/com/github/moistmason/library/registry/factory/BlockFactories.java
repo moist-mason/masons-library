@@ -1,6 +1,8 @@
 package com.github.moistmason.library.registry.factory;
 
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,6 +17,11 @@ public class BlockFactories {
     @FunctionalInterface
     public interface BlockFactory<T extends Block> {
         T create(Properties properties);
+    }
+
+    @FunctionalInterface
+    public interface DropExperienceBlockFactory<T extends DropExperienceBlock> {
+        T create(IntProvider provider, Properties properties);
     }
 
     /** Stair block factory. */
