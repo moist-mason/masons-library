@@ -76,23 +76,28 @@ public final class BlockPosUtil {
      * @see net.minecraft.world.phys.AABB#expandTowards(double, double, double)
      */
     public static BlockBox expandBoxVertically(BlockBox box, int xOffset, int zOffset, int height) {
-        int minX = box.min().getX() - xOffset;
         int minY = box.min().getY();
-        int minZ = box.min().getZ() - zOffset;
-        int maxX = box.max().getX() + xOffset;
         int maxY = box.max().getY();
-        int maxZ = box.max().getZ() + zOffset;
 
         if (height < 0.0) {
-            minY += height;
+            minY += (height + 1);
         } else if (height > 0.0) {
-            maxY += height;
+            maxY += (height - 1);
         }
 
-        return BlockBox.of(
-                new BlockPos(minX, minY, minZ),
-                new BlockPos(maxX, maxY, maxZ)
+        BlockPos min = new BlockPos(
+                box.min().getX() - xOffset,
+                minY,
+                box.min().getZ() - zOffset
         );
+
+        BlockPos max = new BlockPos(
+                box.max().getX() + xOffset,
+                maxY,
+                box.max().getZ() + zOffset
+        );
+
+        return BlockBox.of(min, max);
     }
 
     /**
@@ -172,7 +177,7 @@ public final class BlockPosUtil {
      * @return The box.
      */
     public static BlockBox cubeAbove(BlockPos pos, int height) {
-        return cubeBelow(pos, 1, height);
+        return cubeAbove(pos, 1, height);
     }
 
     /**
@@ -183,7 +188,7 @@ public final class BlockPosUtil {
      * @return The box.
      */
     public static BlockBox cubeAbove(BlockPos pos, int offset, int height) {
-        return boxBelow(pos, offset, offset, height);
+        return boxAbove(pos, offset, offset, height);
     }
 
     /**
