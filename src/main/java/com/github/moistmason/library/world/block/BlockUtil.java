@@ -1,7 +1,7 @@
 package com.github.moistmason.library.world.block;
 
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
