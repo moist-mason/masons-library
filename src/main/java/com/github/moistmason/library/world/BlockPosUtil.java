@@ -20,12 +20,12 @@ import java.util.*;
 public final class BlockPosUtil {
 
     /**
-     * Inflates a block box on all sides by the defined amounts.
+     * Expands a block box on all sides by the defined amounts.
      * @param box The starting box.
      * @param xOffset how much the box expands along the x-axis (in both directions).
      * @param yOffset how much the box expands along the y-axis (in both directions).
      * @param zOffset how much the box expands along the z-axis (in both directions).
-     * @return The inflated box.
+     * @return The expanded box.
      * @see net.minecraft.world.phys.AABB#inflate(double, double, double)
      */
     public static BlockBox expandBox(BlockBox box, int xOffset, int yOffset, int zOffset) {
@@ -50,7 +50,7 @@ public final class BlockPosUtil {
      * @param xOffset how much the box contracts along the x-axis (in both directions).
      * @param yOffset how much the box contracts along the y-axis (in both directions).
      * @param zOffset how much the box contracts along the z-axis (in both directions).
-     * @return The inflated box.
+     * @return The shrunken box.
      * @see net.minecraft.world.phys.AABB#contract(double, double, double)
      */
     public static BlockBox contractBox(BlockBox box, int xOffset, int yOffset, int zOffset) {
@@ -74,19 +74,19 @@ public final class BlockPosUtil {
      * @param box The starting box.
      * @param xOffset How much the box extends along the x-axis (in both directions) from the starting position.
      * @param zOffset How much the box extends along the z-axis (in both directions) from the starting position.
-     * @param height The absolute value of this number defines the height of the box. A positive value means the box will extend
+     * @param heightOffset The absolute value of this number defines the height change of the box. A positive value means the box will extend
      *                <i>above</i> the starting position, while negative values mean the box will extend <i>below</i> the starting position.
      * @return The expanded box.
      * @see net.minecraft.world.phys.AABB#expandTowards(double, double, double)
      */
-    public static BlockBox expandBoxVertically(BlockBox box, int xOffset, int zOffset, int height) {
+    public static BlockBox expandBoxVertically(BlockBox box, int xOffset, int zOffset, int heightOffset) {
         int minY = box.min().getY();
         int maxY = box.max().getY();
 
-        if (height < 0) {
-            minY += (height + 1);
-        } else if (height > 0) {
-            maxY += (height - 1);
+        if (heightOffset < 0) {
+            minY += heightOffset;
+        } else if (heightOffset > 0) {
+            maxY += heightOffset;
         }
 
         BlockPos min = new BlockPos(
@@ -156,43 +156,43 @@ public final class BlockPosUtil {
     /**
      * Creates a 3x3x3 cube starting (and extending downwards) from the given block position.
      * @param pos The center position.
-     * @param height The height of the box.
+     * @param heightOffset The height change of the box. Higher positive values make the box extend down farther.
      * @return The box.
      */
-    public static BlockBox cubeBelow(BlockPos pos, int height) {
-        return cubeBelow(pos, 1, height);
+    public static BlockBox cubeBelow(BlockPos pos, int heightOffset) {
+        return cubeBelow(pos, 1, heightOffset);
     }
 
     /**
-     * Creates a box of a defined size starting (and extending downwards) from the given block position based on the defined height and offset.
+     * Creates a box of a defined size starting (and extending downwards) from the given block position based on the defined height and xzOffset.
      * @param pos The center position.
-     * @param offset How much each cube side extends (in all directions) from the center position. The diameter of the cube is <code>2*offset + 1</code>
-     * @param height The height of the box.
+     * @param xzOffset How much each cube side extends (in both horizontal directions) from the center position. The diameter of the cube is <code>2*xzOffset + 1</code>
+     * @param heightOffset The height change of the box. Higher positive values make the box extend down farther.
      * @return The box.
      */
-    public static BlockBox cubeBelow(BlockPos pos, int offset, int height) {
-        return boxBelow(pos, offset, offset, height);
+    public static BlockBox cubeBelow(BlockPos pos, int xzOffset, int heightOffset) {
+        return boxBelow(pos, xzOffset, xzOffset, heightOffset);
     }
 
     /**
      * Creates a 3x3x3 cube starting (and extending upwards) from the given block position based on the defined height.
      * @param pos The center position.
-     * @param height The height of the box.
+     * @param heightOffset The height change of the box. Higher positive values make the box extend up farther.
      * @return The box.
      */
-    public static BlockBox cubeAbove(BlockPos pos, int height) {
-        return cubeAbove(pos, 1, height);
+    public static BlockBox cubeAbove(BlockPos pos, int heightOffset) {
+        return cubeAbove(pos, 1, heightOffset);
     }
 
     /**
      * Creates a box of a defined size starting (and extending upwards) from the given block position based on the defined height and offset.
      * @param pos The center position.
      * @param offset How much each cube side extends (in all directions) from the center position. The diameter of the cube is <code>2*offset + 1</code>
-     * @param height The height of the box.
+     * @param heightOffset The height change of the box. Higher positive values makes the box extend up farther.
      * @return The box.
      */
-    public static BlockBox cubeAbove(BlockPos pos, int offset, int height) {
-        return boxAbove(pos, offset, offset, height);
+    public static BlockBox cubeAbove(BlockPos pos, int offset, int heightOffset) {
+        return boxAbove(pos, offset, offset, heightOffset);
     }
 
     /**
@@ -213,17 +213,17 @@ public final class BlockPosUtil {
      * @param pos The center position.
      * @param xOffset how much the box extends along the x-axis (in both directions) from the center position.
      * @param zOffset how much the box extends along the z-axis (in both directions) from the center position.
-     * @param height The height of the box.
+     * @param heightOffset The height change of the box. Higher positive values makes the box extend down farther.
      * @return The box.
      */
-    public static BlockBox boxBelow(BlockPos pos, int xOffset, int zOffset, int height) {
+    public static BlockBox boxBelow(BlockPos pos, int xOffset, int zOffset, int heightOffset) {
         BlockBox box = BlockBox.of(pos);
 
-        if (height <= 0) {
+        if (heightOffset <= 0) {
             throw new IllegalArgumentException("Height must be above 0.");
         }
 
-        return expandBoxVertically(box, xOffset, zOffset, -height);
+        return expandBoxVertically(box, xOffset, zOffset, -heightOffset);
     }
 
     /**
@@ -231,17 +231,17 @@ public final class BlockPosUtil {
      * @param pos The center position.
      * @param xOffset how much the box extends along the x-axis (in both directions) from the center position.
      * @param zOffset how much the box extends along the z-axis (in both directions) from the center position.
-     * @param height The height of the box.
+     * @param heightOffset The height change of the box. Higher positive values makes the box extend up farther.
      * @return The box.
      */
-    public static BlockBox boxAbove(BlockPos pos, int xOffset, int zOffset, int height) {
+    public static BlockBox boxAbove(BlockPos pos, int xOffset, int zOffset, int heightOffset) {
         BlockBox box = BlockBox.of(pos);
 
-        if (height <= 0) {
+        if (heightOffset <= 0) {
             throw new IllegalArgumentException("Height must be above 0.");
         }
 
-        return expandBoxVertically(box, xOffset, zOffset, height);
+        return expandBoxVertically(box, xOffset, zOffset, heightOffset);
     }
 
     /**
