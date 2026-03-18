@@ -2,10 +2,21 @@ package com.github.moistmason.library.world;
 
 import net.minecraft.core.BlockBox;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.rmi.dgc.Lease;
+import java.util.*;
 
 /**
  * <p> Utility methods related to block positions and block boxes. </p>
@@ -33,8 +44,8 @@ public final class BlockPosUtil {
 
         BlockPos max = new BlockPos(
                 box.max().getX() + xOffset,
-                box.max().getX() + yOffset,
-                box.max().getX() + zOffset
+                box.max().getY() + yOffset,
+                box.max().getZ() + zOffset
         );
 
         return BlockBox.of(min, max);
@@ -58,8 +69,8 @@ public final class BlockPosUtil {
 
         BlockPos max = new BlockPos(
                 box.max().getX() - xOffset,
-                box.max().getX() - yOffset,
-                box.max().getX() - zOffset
+                box.max().getY() - yOffset,
+                box.max().getZ() - zOffset
         );
 
         return BlockBox.of(min, max);
@@ -79,9 +90,9 @@ public final class BlockPosUtil {
         int minY = box.min().getY();
         int maxY = box.max().getY();
 
-        if (height < 0.0) {
+        if (height < 0) {
             minY += (height + 1);
-        } else if (height > 0.0) {
+        } else if (height > 0) {
             maxY += (height - 1);
         }
 
@@ -263,13 +274,12 @@ public final class BlockPosUtil {
      * @return The positions.
      */
     public static List<BlockPos> positionsInHollowBox(BlockBox box, int depth) {
-        List<BlockPos> all = positionsInBox(box);
         List<BlockPos> inHollow = new ArrayList<>();
 
-        // retrieve inner layers via contraction
+        // retrieve inner layers via contraction; the higher the depth number, the more layers are present.
         BlockBox core = contractBox(box, depth, depth, depth);
         
-        for (BlockPos pos : all) {
+        for (BlockPos pos : box) {
             if (!core.contains(pos)) {
                 inHollow.add(pos);
             }
@@ -299,5 +309,198 @@ public final class BlockPosUtil {
     public static BlockPos max(List<BlockPos> positions) {
         Optional<BlockPos> max = positions.stream().max(BlockPos::compareTo);
         return max.orElseThrow();
+    }
+
+    /**
+     * Distance formula between two block positions. Calls {@link BlockPos#distSqr(Vec3i)}.
+     * @param start The starting position.
+     * @param end The ending position.
+     * @return The distance.
+     */
+    public static double distSqr(BlockPos start, BlockPos end) {
+        return start.distSqr(end);
+    }
+
+    /**
+     * Distance formula between two block positions along the horizontal axis.
+     * @param start The starting position.
+     * @param end The ending position.
+     * @return The distance.
+     */
+    public static double horizontalDistSqr(BlockPos start, BlockPos end) {
+        double xDistance = start.getX() - end.getX();
+        double zDistance = start.getZ() - end.getZ();
+        return xDistance * xDistance + zDistance * zDistance;
+    }
+
+    /**
+     * Checks if a block is present at the given block position.
+     * @param level The level.
+     * @param pos The block position.
+     * @return {@code true} if the position does not contain air, meaning there is a block at the position.
+     */
+    public static boolean containsAnyBlock(Level level, BlockPos pos) {
+        return !level.getBlockState(pos).isAir();
+    }
+
+    /**
+     * Checks if any block is present inside the given block box.
+     * @param level The level.
+     * @param box The block box.
+     * @return {@code true} if any block position in the box is occupied by something besides air.
+     */
+    public static boolean containsAnyBlock(Level level, BlockBox box) {
+        List<BlockPos> positions = positionsInBox(box);
+        return positions.stream().anyMatch(pos -> containsAnyBlock(level, pos));
+    }
+
+    /**
+     * Checks if a block of the given type is present at the given block position.
+     * @param level The level.
+     * @param pos The block position.
+     * @param block The type of block.
+     * @return {@code true} if the position contains a block of the given type.
+     */
+    public static boolean containsBlock(Level level, BlockPos pos, Block block) {
+        return level.getBlockState(pos).is(block);
+    }
+
+    /**
+     * Checks if a block of the given type is present in the block box.
+     * @param level The level.
+     * @param box The block box.
+     * @param block The type of block.
+     * @return {@code true} if the box contains a block of the given type.
+     */
+    public static boolean containsBlock(Level level, BlockBox box, Block block) {
+        List<BlockPos> positions = positionsInBox(box);
+        return positions.stream().anyMatch(pos -> containsBlock(level, pos, block));
+    }
+
+    /**
+     * Map of the blocks (occupied block positions) within the given box.
+     * @param level The level.
+     * @param box The box.
+     * @return The map, the keys of which equal the block positions, and the values equal the corresponding block states.
+     */
+    public static Map<BlockPos, BlockState> blocksInBox(Level level, BlockBox box) {
+        List<BlockPos> positions = positionsInBox(box)
+                .stream().filter(pos -> containsAnyBlock(level, pos))
+                .toList();
+        Map<BlockPos, BlockState> map = new HashMap<>();
+
+        for (BlockPos pos : positions) {
+            BlockState state = level.getBlockState(pos);
+            map.put(pos, state);
+        }
+
+        return map;
+    }
+
+    /**
+     * Map of the blocks (occupied block positions) of the specified type within the given box.
+     * @param level The level.
+     * @param box The box.
+     * @param block The block type.
+     * @return The map, the keys of which equal the block positions, and the values equal the corresponding block states.
+     */
+    public static Map<BlockPos, BlockState> blocksInBox(Level level, BlockBox box, Block block) {
+        List<BlockPos> positions = positionsInBox(box)
+                .stream().filter(pos -> containsBlock(level, pos, block))
+                .toList();
+        Map<BlockPos, BlockState> map = new HashMap<>();
+
+        for (BlockPos pos : positions) {
+            BlockState state = level.getBlockState(pos);
+            map.put(pos, state);
+        }
+
+        return map;
+    }
+
+
+    /**
+     * Checks if any block entity is present at the given block position.
+     * @param level The level.
+     * @param pos The block position.
+     * @return {@code true} if the position contains a block entity.
+     */
+    public static boolean containsAnyBlockEntity(Level level, BlockPos pos) {
+        return level.getBlockEntity(pos) != null;
+    }
+
+    /**
+     * Checks if any block entity is present inside the given block box.
+     * @param level The level.
+     * @param box The block box.
+     * @return {@code true} if the box contains a block entity.
+     */
+    public static boolean containsAnyBlockEntity(Level level, BlockBox box) {
+        List<BlockPos> positions = positionsInBox(box);
+        return positions.stream().anyMatch(pos -> containsAnyBlockEntity(level, pos));
+    }
+
+    /**
+     * Checks if a block entity of the given type is present inside the given block position.
+     * @param level The level.
+     * @param pos The block box.
+     * @param type The block entity type.
+     * @return {@code true} if the position contains a block entity of the given type.
+     */
+    public static <T extends BlockEntity> boolean containsBlockEntity(Level level, BlockPos pos, BlockEntityType<T> type) {
+        return level.getBlockEntity(pos, type).isPresent();
+    }
+
+    /**
+     * Checks if a block entity of the given type is present inside the given block box.
+     * @param level The level.
+     * @param box The block box.
+     * @param type The block entity type.
+     * @return {@code true} if the box contains a block entity of the given type.
+     */
+    public static <T extends BlockEntity> boolean containsBlockEntity(Level level, BlockBox box, BlockEntityType<T> type) {
+        List<BlockPos> positions = positionsInBox(box);
+        return positions.stream().anyMatch(pos -> containsBlockEntity(level, pos, type));
+    }
+
+    /**
+     * Map of the block entities (occupied block positions) within the given box.
+     * @param level The level.
+     * @param box The box.
+     * @return The map, the keys of which equal the block positions, and the values equal the corresponding block entities.
+     */
+    public static Map<BlockPos, BlockEntity> blockEntitiesInBox(Level level, BlockBox box) {
+        List<BlockPos> positions = positionsInBox(box)
+                .stream().filter(pos -> containsAnyBlockEntity(level, box))
+                .toList();
+        Map<BlockPos, BlockEntity> map = new HashMap<>();
+
+        for (BlockPos pos : positions) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            map.put(pos, entity);
+        }
+
+        return map;
+    }
+
+    /**
+     * Map of the block entities (occupied block positions) of the specified type within the given box.
+     * @param level The level.
+     * @param box The box.
+     * @param type The block entity type.
+     * @return The map, the keys of which equal the block positions, and the values equal the corresponding block entities.
+     */
+    public static Map<BlockPos, BlockEntity> blockEntitiesInBox(Level level, BlockBox box, BlockEntityType<? extends BlockEntity> type) {
+        List<BlockPos> positions = positionsInBox(box)
+                .stream().filter(pos -> containsBlockEntity(level, pos, type))
+                .toList();
+        Map<BlockPos, BlockEntity> map = new HashMap<>();
+
+        for (BlockPos pos : positions) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            map.put(pos, entity);
+        }
+
+        return map;
     }
 }

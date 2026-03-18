@@ -169,7 +169,7 @@ public abstract class LibraryBlockStateProvider extends BlockStateProvider {
      * @param <T> the block type -> the {@link DoorBlock} class or one of its children.
      */
     protected <T extends DoorBlock> void doorBlock(DeferredBlock<T> block, ResourceLocation bottom, ResourceLocation top) {
-        doorBlock(block, bottom, top);
+        doorBlock(block.get(), bottom, top);
     }
 
     /**
